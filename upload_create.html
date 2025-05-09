@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Zabbix hosts - Upload</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles_create.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Logo -->
+        <img src="{{ url_for('static', filename='images/logo_simplefibra.jpg') }}" alt="Logo" class="logo" width="300">
+        
+        <h1>Creación de hosts en Zabbix</h1>
+        
+        <!-- Flash message -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-message">
+                    <ul>
+                        {% for message in messages %}
+                            <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        <!-- Formulario de carga de archivo -->
+        <form method="POST" enctype="multipart/form-data" class="upload-form">
+            <label for="file" class="form-label">Seleccione un archivo Excel:</label>
+            <input type="file" name="file" id="file" accept=".xlsx, .xls" required>
+            <button type="submit" class="submit-btn">Procesar</button>
+        </form>
+
+        <a href="/" class="back-link">Volver</a>
+
+        <div class="watermark">Powered by Juan Caseres</div>
+    </div>
+</body>
+</html>

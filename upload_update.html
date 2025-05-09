@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zabbix Fields Update - Uplodad .xlsx</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles_update.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Logo -->
+        <img src="{{ url_for('static', filename='images/logo_simplefibra.jpg') }}" alt="Logo" class="logo" width="300">
+        
+        <h1>Actualización de campos en Zabbix</h1>
+        
+        <!-- Flash message -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-message">
+                    <ul>
+                        {% for message in messages %}
+                            <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        <!-- Formulario de carga de archivo -->
+        <form method="POST" enctype="multipart/form-data" class="upload-form">
+            <div>
+                <a href="{{ url_for('descargar_hosts') }}" class="btn">Descargar Excel con hosts actuales</a>
+            </div>
+            <label for="file" class="form-label">Seleccione un archivo Excel:</label>           
+            <input type="file" name="file" id="file" accept=".xlsx, .xls" required>
+            
+            <!-- Selector de campos a actualizar -->
+            <div class="field-selector">
+                <label for="fields">Selecciona los campos a actualizar:</label>
+                <!-- Checkbox de selección global -->
+                <div class="select-all-container">
+                    <input type="checkbox" id="select-all-checkbox" class="select-all-checkbox">
+                    <label for="select-all-checkbox" class="select-all-label">Seleccionar todos</label>
+                </div>
+                <select name="fields" id="fields" multiple>
+                    {% if 'name' in fields %}
+                        <option value="{{ fields.name }}">{{ fields.name }} (name)</option>
+                    {% endif %}
+                    {% if 'description' in fields %}
+                        <option value="{{ fields.description }}">{{ fields.description }} (description)</option>
+                    {% endif %}
+                    
+                    <option value="modify_groups" style="color: rgb(78, 78, 134); font-style: italic;">Modificar grupos (Localidad, OLT, Feeder)</option>
+
+                    {% for tech_key, friendly_label in fields.inventory.items() %}
+                        <option value="{{ friendly_label }}">{{ friendly_label }} ({{ tech_key }})</option>
+                    {% endfor %}
+                </select>
+                <p class="selector-help">Mantén presionado Ctrl (Windows) o Cmd (Mac) para seleccionar múltiples campos</p>
+            </div>            
+            
+            <button type="submit" class="submit-btn">Actualizar</button>
+        </form>
+
+        <a href="/" class="back-link">Volver</a>
+
+        <div class="watermark">Powered by Juan Caseres</div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const fieldSelector = document.getElementById('fields');
+            const selectAllCheckbox = document.getElementById('select-all-checkbox');
+
+            selectAllCheckbox.addEventListener('change', function () {
+                const shouldSelect = this.checked;
+                Array.from(fieldSelector.options).forEach(option => {
+                    if (!option.disabled) {
+                        option.selected = shouldSelect;
+                    }
+                });
+            });
+
+            // Ajustes móviles
+            if ('ontouchstart' in window) {
+                fieldSelector.size = 5;
+            }
+
+            // Doble clic para seleccionar/deseleccionar individualmente
+            fieldSelector.addEventListener('dblclick', function (e) {
+                if (e.target.tagName === 'OPTION') {
+                    e.target.selected = !e.target.selected;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
